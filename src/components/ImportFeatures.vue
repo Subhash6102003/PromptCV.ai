@@ -156,8 +156,14 @@ const emit = defineEmits(['data-imported'])
 const connectLinkedIn = async () => {
   loading.value = true
   try {
+    const apiUrl = import.meta.env.VITE_API_URL
+    if (!apiUrl) {
+      showToast('LinkedIn connection requires backend API. Running in demo mode.', 'error')
+      loading.value = false
+      return
+    }
     // Use the backend endpoint for LinkedIn OAuth
-    window.location.href = 'http://localhost:3000/api/linkedin/connect'
+    window.location.href = `${apiUrl}/api/linkedin/connect`
   } catch (error) {
     showToast('Failed to connect LinkedIn', 'error')
     loading.value = false
@@ -167,8 +173,14 @@ const connectLinkedIn = async () => {
 const connectGitHub = async () => {
   loading.value = true
   try {
+    const apiUrl = import.meta.env.VITE_API_URL
+    if (!apiUrl) {
+      showToast('GitHub connection requires backend API. Running in demo mode.', 'error')
+      loading.value = false
+      return
+    }
     // Use the backend endpoint for GitHub OAuth
-    window.location.href = 'http://localhost:3000/api/github/connect'
+    window.location.href = `${apiUrl}/api/github/connect`
   } catch (error) {
     showToast('Failed to connect GitHub', 'error')
     loading.value = false

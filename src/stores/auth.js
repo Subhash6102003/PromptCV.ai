@@ -15,14 +15,28 @@ export const useAuthStore = defineStore('auth', () => {
   const initAuth = async () => {
     try {
       loading.value = true
+      
+      // Check if Firebase is available
+      if (!authService.init) {
+        console.warn('Auth service not available, running in demo mode')
+        user.value = null
+        loading.value = false
+        return null
+      }
+      
       const currentUser = await authService.init()
       user.value = currentUser
       
       if (currentUser) {
         // Load additional user data from Firestore
-        userData.value = await authService.getUserData()
-        githubConnected.value = userData.value?.githubConnected || false
-        linkedinConnected.value = userData.value?.linkedinConnected || false
+        try {
+          userData.value = await authService.getUserData()
+          githubConnected.value = userData.value?.githubConnected || false
+          linkedinConnected.value = userData.value?.linkedinConnected || false
+        } catch (firestoreError) {
+          console.warn('Failed to load user data from Firestore:', firestoreError)
+          // Continue without user data
+        }
       }
       
       loading.value = false
