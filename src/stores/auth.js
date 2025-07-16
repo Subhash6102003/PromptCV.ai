@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import authService from '@/services/authService'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
@@ -16,8 +15,19 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       loading.value = true
       
-      // Check if Firebase is available
-      if (!authService.init) {
+      // Lazy load auth service
+      let authService = null
+      try {
+        authService = (await import('@/services/authService')).default
+      } catch (importError) {
+        console.warn('Auth service not available, running in demo mode')
+        user.value = null
+        loading.value = false
+        return null
+      }
+      
+      // Check if auth service is available
+      if (!authService || !authService.init) {
         console.warn('Auth service not available, running in demo mode')
         user.value = null
         loading.value = false
