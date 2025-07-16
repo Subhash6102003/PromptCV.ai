@@ -19,10 +19,16 @@ class AuthService {
     this.isAuthenticated = false
     this.loading = true
     this.listeners = []
+    this.firebaseAvailable = !!auth
   }
 
   // Initialize auth state listener
   init() {
+    if (!this.firebaseAvailable) {
+      console.warn('Firebase not available, skipping auth initialization')
+      this.loading = false
+      return Promise.resolve(null)
+    }
     return new Promise((resolve) => {
       onAuthStateChange(async (user) => {
         this.loading = false

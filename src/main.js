@@ -24,14 +24,18 @@ app.use(router)
 app.mount('#app')
 
 // Initialize Firebase Auth asynchronously (non-blocking)
-try {
-  import('./stores/auth').then(({ useAuthStore }) => {
-    const authStore = useAuthStore()
-    authStore.initAuth().catch(error => {
-      console.warn('Firebase Auth initialization failed:', error)
-      // Continue without auth for now
+setTimeout(() => {
+  try {
+    import('./stores/auth').then(({ useAuthStore }) => {
+      const authStore = useAuthStore()
+      authStore.initAuth().catch(error => {
+        console.warn('Firebase Auth initialization failed:', error)
+        // Continue without auth for now
+      })
+    }).catch(error => {
+      console.warn('Auth store import failed:', error)
     })
-  })
-} catch (error) {
-  console.warn('Auth store import failed:', error)
-}
+  } catch (error) {
+    console.warn('Auth store import failed:', error)
+  }
+}, 100)
